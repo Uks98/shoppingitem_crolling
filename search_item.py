@@ -1,4 +1,5 @@
 from lib2to3.pgen2 import driver
+from random import random
 import time
 import csv
 from selenium import webdriver
@@ -9,6 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC 
 import pyautogui
 import pyperclip
+import random
 
 browser = webdriver.Chrome('c:/chromedriver.exe')
 #browser.maximize_window()
@@ -16,11 +18,14 @@ browser.get("https://www.naver.com/")
 browser.implicitly_wait(10) #로딩이 될때까지 10초기다림
 #쇼핑메뉴클릭
 browser.find_element(By.CSS_SELECTOR,"a.nav.shop").click()
-time.sleep(2)
-
+browser.implicitly_wait(time_to_wait=2)
 #검색하기
-browser.find_element(By.CSS_SELECTOR,"._searchInput_search_input_QXUFf").click()
-pyautogui.write("ipone 6",interval=0.15)
+selector = pyautogui.prompt("검색어를 입력해주세요")
+search = browser.find_element(By.CSS_SELECTOR,"._searchInput_search_input_QXUFf")
+search.click()
+browser.implicitly_wait(time_to_wait=2)
+search.send_keys(selector)
+#pyautogui.write(selector,interval=0.15)
 pyautogui.press("Enter")
 
 #무한 스크롤
@@ -33,7 +38,7 @@ while True:
     browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
     # 대기 1초 (로딩으로 인해 알맞는 초 조절)
-    time.sleep(1)
+    browser.implicitly_wait(time_to_wait=1)
 
     # 스크롤 길이 비교로 끝까지 갔는지 확인
     new_height = browser.execute_script("return document.body.scrollHeight")
@@ -41,8 +46,10 @@ while True:
         break
     last_height = new_height
 
-#
-f = open(r"C:\python_file\py_item_crolling\csv123_file\data.csv",'w',encoding='CP949',newline='') 
+#엑셀 저장
+f = open(f"C:\python_file\py_item_crolling\csv123_file\{selector}.csv",'w',encoding='CP949',newline='')
+    
+   
 
 #상품정보 div
 items = browser.find_elements(By.CSS_SELECTOR,".basicList_info_area__TWvzp")
